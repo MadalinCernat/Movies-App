@@ -65,6 +65,7 @@ namespace MoviesAPI
             builder.Services.AddScoped(typeof(DbContext), typeof(MovieDbContext));
             builder.Services.AddScoped<MovieService>();
             builder.Services.AddScoped<MovieReviewService>();
+            builder.Services.AddScoped<UserService>();
 
             builder.Services.AddControllers().AddJsonOptions(options =>
             {

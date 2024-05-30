@@ -10,6 +10,7 @@ namespace MoviesAPI.DatabaseContext
     {
         public DbSet<Movie> Movies { get; set; }
         public DbSet<MovieReview> MovieReviews { get; set; }
+        public DbSet<User> Users { get; set; }
 
         public MovieDbContext(DbContextOptions<MovieDbContext> options) : base(options)
         {

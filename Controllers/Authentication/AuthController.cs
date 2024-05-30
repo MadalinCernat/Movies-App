@@ -3,35 +3,45 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
+using MoviesAPI.Service;
 
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    // Dummy in-memory store for demo purposes
-    private static List<User> users = new List<User>();
     private readonly IConfiguration _configuration;
+    private readonly UserService _userService;
 
-    public AuthController(IConfiguration configuration)
+    public AuthController(IConfiguration configuration, UserService userService)
     {
         _configuration = configuration;
+        _userService = userService;
     }
 
     [HttpPost("register")]
-    public IActionResult Register([FromBody] User user)
+    public IActionResult Register([FromBody] CredentialsModel register)
     {
-        if (users.Any(u => u.Username == user.Username))
+        List<User> users = _userService.GetAllUsers().ToList();
+        if (users.Any(u => u.Username == register.Username))
         {
             return BadRequest("User already exists");
         }
 
-        users.Add(user);
+        User newUser = new User();
+        Guid guid = Guid.NewGuid();
+
+        newUser.Id = guid.ToString();
+        newUser.Username = register.Username;
+        newUser.Password = register.Password;
+
+        _userService.AddUser(newUser);
         return Ok("User registered successfully");
     }
 
     [HttpPost("login")]
-    public IActionResult Login([FromBody] User login)
+    public IActionResult Login([FromBody] CredentialsModel login)
     {
+        List<User> users = _userService.GetAllUsers().ToList();
         var existingUser = users.FirstOrDefault(u => u.Username == login.Username && u.Password == login.Password);
         if (existingUser == null)
         {
@@ -58,9 +68,10 @@ public class AuthController : ControllerBase
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
-}
-public class User
-{
-    public string Username { get; set; }
-    public string Password { get; set; }
+
+    public class CredentialsModel
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+    }
 }
