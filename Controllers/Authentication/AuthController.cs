@@ -62,7 +62,7 @@ public class AuthController : ControllerBase
             issuer: _configuration["Jwt:Issuer"],
             audience: _configuration["Jwt:Audience"],
             claims: new[] { new Claim(ClaimTypes.Name, username) },
-            expires: DateTime.UtcNow.AddMinutes(1), // Token expiry time (adjust as needed)
+            expires: DateTime.UtcNow.AddMinutes(1),
             signingCredentials: credentials
         );
 
